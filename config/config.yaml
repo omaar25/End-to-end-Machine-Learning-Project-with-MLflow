@@ -2,6 +2,6 @@ artifacts_root: artifacts
 
 data_ingestion:
   root_dir: artifacts/data_ingestion
-  source_URL: "https://raw.githubusercontent.com/omaar25/End-to-end-Machine-Learning-Project-with-MLflow/main/artifacts/data_ingestion/machine-predictive-maintenance-classification.zip"  # URL for downloading
+  source_URL: "https://github.com/omaar25/End-to-end-Machine-Learning-Project-with-MLflow/blob/main/artifacts/data_ingestion/machine-predictive-maintenance-classification.zip"  # URL for downloading
   local_data_file: "artifacts/data_ingestion/machine-predictive-maintenance-classification.zip"  # Local path to the zip file
   unzip_dir: artifacts/data_ingestion  # Directory where the zip will be extracted
