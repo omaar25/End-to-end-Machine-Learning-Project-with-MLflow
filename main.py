@@ -1,4 +1,5 @@
 from src.ML.pipeline.S1_data_ingestion import DataIngestionPipeline
+from src.ML.pipeline.S2_data_validation import DataValidationPipeline
 from src.ML import logger
 
 
@@ -7,11 +8,24 @@ STAGE_NAME = "Data Ingestion"
 
 try:
     logger.info(f"******* stage {STAGE_NAME} started *******")
-    object = DataIngestionPipeline()
-    object.main()
-    logger.info(f"******* stage {STAGE_NAME} completed *******")
+    data_ingestion = DataIngestionPipeline()
+    data_ingestion.main()
+    logger.info(f"******* stage {STAGE_NAME} completed  *******\n\n")
 except Exception as e:
     logger.exception(e)
     raise e
+
+
+STAGE_NAME = "Data Validation"
+
+try:
+    logger.info(f"******* stage {STAGE_NAME} started *******")
+    data_validation = DataValidationPipeline()
+    data_validation.main()
+    logger.info(f"******* stage {STAGE_NAME} completed *******\n\n")
+except Exception as e:
+    logger.exception(e)
+    raise e
+
 
 
