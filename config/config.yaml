@@ -16,3 +16,8 @@ data_validation:
 data_processing:
   root_dir : artifacts/data_processing
   data_path : artifacts/data_ingestion/predictive_maintenance.csv
+
+
+
+
+

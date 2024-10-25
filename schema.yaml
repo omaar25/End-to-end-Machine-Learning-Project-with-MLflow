@@ -11,5 +11,4 @@ COLUMNS:
   Failure Type: object
 
 TARGET_COLUMN:
-  Target: int64
   Failure Type: object

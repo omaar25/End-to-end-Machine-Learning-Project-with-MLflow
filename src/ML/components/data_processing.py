@@ -21,8 +21,7 @@ class DataProcessing:
 
     def rename_and_drop_columns(self):
         """Rename and drop specified columns."""
-        self.df.rename(columns={'Target': 'Machine failure'}, inplace=True)
-        self.df.drop(['UDI', 'Product ID'], axis=1, inplace=True)
+        self.df.drop(['UDI', 'Product ID', 'Target'], axis=1, inplace=True)
         logger.info("Renamed and dropped columns")
 
     def convert_temperature(self):
@@ -58,16 +57,8 @@ class DataProcessing:
         logger.info("Applied random oversampling to balance classes")
 
     def train_test_split(self):
-        """Split data into features and target, then save them as CSV files."""
-        X = self.df.drop('type_of_failure', axis=1) 
-        y = self.df['type_of_failure'] 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        X_train.to_csv(os.path.join(self.config.root_dir, "X_train.csv"), index=False)
-        X_test.to_csv(os.path.join(self.config.root_dir, "X_test.csv"), index=False)
-        y_train.to_csv(os.path.join(self.config.root_dir, "y_train.csv"), index=False)
-        y_test.to_csv(os.path.join(self.config.root_dir, "y_test.csv"), index=False)
+        train, test = train_test_split(self.df, test_size=0.2, random_state=42)
+        train.to_csv(os.path.join(self.config.root_dir, "train.csv"), index=False)
+        test.to_csv(os.path.join(self.config.root_dir, "test.csv"), index=False)
         logger.info("Data split into training and test sets")
-        logger.info(f"X_Train shape: {X_train.shape}, "
-                    f"X_Test shape: {X_test.shape}, "
-                    f"y_train shape: {y_train.shape}, "
-                    f"y_test shape: {y_test.shape}")
+        logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
