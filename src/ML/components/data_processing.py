@@ -35,10 +35,11 @@ class DataProcessing:
         """Encode categorical features with OrdinalEncoder and LabelEncoder."""
         ordinal_encoder = OrdinalEncoder(categories=[['L', 'M', 'H']])
         self.df['Type'] = ordinal_encoder.fit_transform(self.df[['Type']])
-
+        self.df['Type'] = pd.to_numeric(self.df['Type'], errors='coerce')
         label_encoder = LabelEncoder()
-        self.df['type_of_failure'] = label_encoder.fit_transform(self.df['Failure Type'])
-        logger.info("Encoded categorical features")
+        self.df['Failure Type'] = label_encoder.fit_transform(self.df['Failure Type'])
+        self.df['Failure Type'] = pd.to_numeric(self.df['Failure Type'], errors='coerce')
+
 
     def scale_features(self):
         """Scale specified numerical features with MinMaxScaler."""
