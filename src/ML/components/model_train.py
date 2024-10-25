@@ -29,37 +29,9 @@ class ModelTrain:
             "Decision Tree": DecisionTreeClassifier(),
             "Random Forest": RandomForestClassifier(),
         }
-        
-        metrics_list = []
-        best_model = None
-        best_f1_score = 0
-
+    
         for model_name, model in models.items():
             model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-
-            accuracy = accuracy_score(y_test, y_pred)
-            precision = precision_score(y_test, y_pred, average='macro')
-            recall = recall_score(y_test, y_pred, average='macro')
-            f1 = f1_score(y_test, y_pred, average='macro')
-            
-            metrics_list.append({
-                "Model": model_name,
-                "Accuracy": accuracy,
-                "Precision": precision,
-                "Recall": recall,
-                "F1 Score": f1
-            })
-
-            if f1 > best_f1_score:
-                best_f1_score = f1
-                best_model = model
-        
-        metrics_df = pd.DataFrame(metrics_list)
-        print(metrics_df)
-
-        best_model_name = metrics_df.loc[metrics_df['F1 Score'].idxmax()]["Model"]
-        print(f"\nBest Model: {best_model_name}")
-        joblib.dump(best_model, os.path.join(self.config.root_dir, self.config.model_name))
+            joblib.dump(model, os.path.join(self.config.root_dir, f"{model_name.replace(' ', '_')}.joblib"))
 
 
