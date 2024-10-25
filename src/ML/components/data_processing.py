@@ -50,8 +50,8 @@ class DataProcessing:
 
     def oversample_data(self):
         """Apply RandomOverSampler to balance classes in the target variable."""
-        X = self.df.drop('type_of_failure', axis=1)
-        y = self.df['type_of_failure']
+        X = self.df.drop('Failure Type', axis=1)
+        y = self.df['Failure Type']
         ros = RandomOverSampler(sampling_strategy='auto')
         X_resampled, y_resampled = ros.fit_resample(X, y)
         self.df = pd.concat([X_resampled, y_resampled], axis=1)
