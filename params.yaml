@@ -1,1 +1,2 @@
-key : value
+LogisticRegression:
+  max_iter : 10000

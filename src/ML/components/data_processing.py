@@ -22,13 +22,20 @@ class DataProcessing:
     def rename_and_drop_columns(self):
         """Rename and drop specified columns."""
         self.df.drop(['UDI', 'Product ID', 'Target'], axis=1, inplace=True)
+        rename_dict = {
+            'Air temperature [K]': 'Air_temperature_C',
+            'Process temperature [K]': 'Process_temperature_C',
+            'Rotational speed [rpm]': 'Rotational_Speed_RPM',
+            'Torque [Nm]': 'Torque_Nm',
+            'Tool wear [min]': 'Tool_Wear_min',
+        }
+        self.df.rename(columns=rename_dict, inplace=True)
         logger.info("Renamed and dropped columns")
 
     def convert_temperature(self):
         """Convert temperature from Kelvin to Celsius and drop original columns."""
-        self.df['Air temperature [c]'] = self.df['Air temperature [K]'] - 273.15
-        self.df['Process temperature [c]'] = self.df['Process temperature [K]'] - 273.15
-        self.df.drop(['Air temperature [K]', 'Process temperature [K]'], axis=1, inplace=True)
+        self.df['Air_temperature_C'] = self.df['Air_temperature_C'] - 273.15
+        self.df['Process_temperature_C'] = self.df['Process_temperature_C'] - 273.15
         logger.info("Converted temperatures to Celsius and dropped original columns")
 
     def encode_features(self):
@@ -43,10 +50,11 @@ class DataProcessing:
 
     def scale_features(self):
         """Scale specified numerical features with MinMaxScaler."""
-        col_to_scale = ['Rotational speed [rpm]', 'Torque [Nm]', 'Tool wear [min]', 'Air temperature [c]', 'Process temperature [c]']
+        col_to_scale = ['Rotational_Speed_RPM', 'Torque_Nm', 'Tool_Wear_min', 'Air_temperature_C', 'Process_temperature_C']
         scaler = MinMaxScaler()
         self.df[col_to_scale] = scaler.fit_transform(self.df[col_to_scale])
         logger.info("Scaled numerical features")
+      
 
     def oversample_data(self):
         """Apply RandomOverSampler to balance classes in the target variable."""

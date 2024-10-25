@@ -1,6 +1,9 @@
 from src.ML.constants import *
 from ML.utils.common import read_yaml, create_directories
-from ML.entity.config_entity import (DataIngestionConfig,DataValidationConfig,DataProcessingConfig)
+from ML.entity.config_entity import (DataIngestionConfig,
+                                     DataValidationConfig,
+                                     DataProcessingConfig,
+                                     ModelTrainConfig)
 
 class ConfigurationManager:
     def __init__(self,
@@ -57,3 +60,22 @@ class ConfigurationManager:
         )
         
         return data_processing_config 
+    
+    def get_model_train_config(self) -> ModelTrainConfig:
+
+        config = self.config.model_train
+        parms = self.params.LogisticRegression
+        target_column = list(self.schema.TARGET_COLUMN.keys())[0]
+
+        create_directories([config.root_dir])
+
+        data_train_config = ModelTrainConfig(
+            root_dir = config.root_dir,
+            train_data_path = config.train_data_path,
+            test_data_path = config.test_data_path,
+            model_name = config.model_name,
+            max_iter = parms.max_iter,
+            target_column = target_column
+        )
+        
+        return data_train_config
