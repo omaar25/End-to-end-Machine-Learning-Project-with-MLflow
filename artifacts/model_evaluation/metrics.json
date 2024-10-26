@@ -1,0 +1,32 @@
+{
+    "metrics": [
+        {
+            "Accuracy": 0.99,
+            "Precision": 0.99,
+            "Recall": 1.0,
+            "F1 Score": 0.99,
+            "Model": "Random_Forest"
+        },
+        {
+            "Accuracy": 0.7800297869584926,
+            "Precision": 0.7656666288845898,
+            "Recall": 0.779918400510334,
+            "F1 Score": 0.7689276290986929,
+            "Model": "Logistic_Regression"
+        },
+        {
+            "Accuracy": 0.9356126832005871,
+            "Precision": 0.9368320721682722,
+            "Recall": 0.9354802450677079,
+            "F1 Score": 0.9337403529899397,
+            "Model": "SVM"
+        },
+        {
+            "Accuracy": 0.9657,
+            "Precision": 0.9585,
+            "Recall": 0.99,
+            "F1 Score": 0.9863,
+            "Model": "Decision_Tree"
+        }
+    ]
+}

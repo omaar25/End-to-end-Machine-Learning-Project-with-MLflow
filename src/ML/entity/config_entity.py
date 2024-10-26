@@ -30,5 +30,16 @@ class ModelTrainConfig:
     train_data_path: Path
     test_data_path : Path
     model_name : str
-    max_iter : int
+    parms : dict
     target_column : str
+
+
+@dataclass(frozen=True)
+class ModelEvaluationConfig:
+    root_dir: Path
+    test_data_path: Path
+    model_path: Path
+    parms: dict
+    metric_file_name: Path
+    target_column: str
+    mlflow_uri: str

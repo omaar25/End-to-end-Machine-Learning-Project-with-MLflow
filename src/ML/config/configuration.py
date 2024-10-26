@@ -3,7 +3,8 @@ from ML.utils.common import read_yaml, create_directories
 from ML.entity.config_entity import (DataIngestionConfig,
                                      DataValidationConfig,
                                      DataProcessingConfig,
-                                     ModelTrainConfig)
+                                     ModelTrainConfig,
+                                     ModelEvaluationConfig)
 
 class ConfigurationManager:
     def __init__(self,
@@ -64,7 +65,7 @@ class ConfigurationManager:
     def get_model_train_config(self) -> ModelTrainConfig:
 
         config = self.config.model_train
-        parms = self.params.LogisticRegression
+        parms = self.params
         target_column = list(self.schema.TARGET_COLUMN.keys())[0]
 
         create_directories([config.root_dir])
@@ -74,8 +75,28 @@ class ConfigurationManager:
             train_data_path = config.train_data_path,
             test_data_path = config.test_data_path,
             model_name = config.model_name,
-            max_iter = parms.max_iter,
+            parms = parms,
             target_column = target_column
         )
         
         return data_train_config
+    
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        config = self.config.model_evaluation
+        parms = {model_name: self.params[model_name] for model_name in self.params.keys()}
+        target_column = list(self.schema.TARGET_COLUMN.keys())[0]
+
+
+        create_directories([config.root_dir])
+
+        model_evaluation_config= ModelEvaluationConfig(
+            root_dir=config.root_dir,
+            test_data_path=config.test_data_path,
+            model_path = config.model_path,
+            parms=parms,
+            metric_file_name=config.metric_file_name,
+            target_column = target_column,
+            mlflow_uri="https://dagshub.com/omaar25/End-to-end-Machine-Learning-Project-with-MLflow.mlflow",
+        )
+
+        return model_evaluation_config

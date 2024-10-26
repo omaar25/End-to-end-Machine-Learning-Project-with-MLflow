@@ -24,10 +24,10 @@ class ModelTrain:
         y_test = test[self.config.target_column]
 
         models = {
-            "Logistic Regression": LogisticRegression(),
+            "Logistic_Regression": LogisticRegression(),
             "SVM": SVC(),
-            "Decision Tree": DecisionTreeClassifier(),
-            "Random Forest": RandomForestClassifier(),
+            "Decision_Tree": DecisionTreeClassifier(),
+            "Random_Forest": RandomForestClassifier(),
         }
     
         for model_name, model in models.items():
