@@ -19,9 +19,7 @@ class ModelTrain:
         test = pd.read_csv(self.config.test_data_path)
 
         X_train = train.drop([self.config.target_column], axis=1)
-        X_test = test.drop([self.config.target_column], axis=1)
         y_train = train[self.config.target_column]
-        y_test = test[self.config.target_column]
 
         models = {
             "Logistic_Regression": LogisticRegression(**self.config.parms.get("Logistic_Regression", {})),

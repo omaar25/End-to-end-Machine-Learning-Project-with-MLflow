@@ -7,6 +7,7 @@ from src.ML import logger
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 
 
 class DataProcessing:
@@ -56,17 +57,36 @@ class DataProcessing:
         logger.info("Scaled numerical features")
       
 
-    def oversample_data(self):
-        """Apply RandomOverSampler to balance classes in the target variable."""
+    def balance_data(self):
+        """Balance the dataset by undersampling 'No Failure' and oversampling other classes."""
+        # Separate features and target variable
         X = self.df.drop('Failure Type', axis=1)
         y = self.df['Failure Type']
-        ros = RandomOverSampler(sampling_strategy='auto')
-        X_resampled, y_resampled = ros.fit_resample(X, y)
-        self.df = pd.concat([X_resampled, y_resampled], axis=1)
-        logger.info("Applied random oversampling to balance classes")
+
+        # Undersample the "No Failure" class
+        rus = RandomUnderSampler(sampling_strategy={'No Failure': 2500})
+        X_under, y_under = rus.fit_resample(X, y)
+
+        # Now, oversample the other classes to 1000
+        ros = RandomOverSampler(sampling_strategy={
+            'Heat Dissipation Failure': 210,
+            'Power Failure': 190,
+            'Overstrain Failure': 140,
+            'Tool Wear Failure': 80,
+            'Random Failures': 40
+        })
+
+        X_balanced, y_balanced = ros.fit_resample(X_under, y_under)
+
+        # Combine balanced features and target variable back into a DataFrame
+        self.df = pd.concat([X_balanced, y_balanced], axis=1)
+
+        logger.info("Balanced the dataset")
+
 
     def train_test_split(self):
-        train, test = train_test_split(self.df, test_size=0.2, random_state=42)
+        y = self.df['Failure Type']
+        train, test = train_test_split(self.df, test_size=0.2, random_state=42, stratify=y)
         train.to_csv(os.path.join(self.config.root_dir, "train.csv"), index=False)
         test.to_csv(os.path.join(self.config.root_dir, "test.csv"), index=False)
         logger.info("Data split into training and test sets")

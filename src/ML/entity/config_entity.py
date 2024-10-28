@@ -30,7 +30,7 @@ class ModelTrainConfig:
     train_data_path: Path
     test_data_path : Path
     model_name : str
-    parms : dict
+    parms : Path
     target_column : str
 
 

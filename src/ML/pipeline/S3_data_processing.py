@@ -23,9 +23,9 @@ class DataProcessingPipeline:
                 data_processing.load_data()
                 data_processing.rename_and_drop_columns()
                 data_processing.convert_temperature()
-                data_processing.encode_features()
                 data_processing.scale_features()
-                data_processing.oversample_data()
+                data_processing.balance_data()
+                data_processing.encode_features()
                 data_processing.train_test_split()
             
             else:
