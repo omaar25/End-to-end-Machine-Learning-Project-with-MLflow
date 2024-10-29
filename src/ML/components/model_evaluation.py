@@ -80,9 +80,7 @@ class ModelEvaluation:
                 best_model_name = model_name
                 model_artifact_path = os.path.join(self.config.root_dir, f'{model_name}.joblib')
                 joblib.dump(best_model, model_artifact_path)
+                logger.info(f"Best model is {best_model_name}")
+
 
         save_json(Path(self.config.metric_file_name), {"metrics": metrics_list})
-
-        best_model_path = os.path.join(self.config.root_dir, f'best_model_{best_model_name}.joblib')
-        joblib.dump(best_model, best_model_path)
-        logger.info(f"Best model is {best_model_name}")
