@@ -45,8 +45,6 @@ class ModelEvaluation:
     def log_to_mlflow(self, model_name, metrics):
         """Log model metrics and parameters to MLflow."""
         with mlflow.start_run(run_name=model_name):
-            mlflow.log_param("model_name", model_name)
-
             model_params = self.get_model_params(model_name)
             for param, value in model_params.items():
                 mlflow.log_param(param, value)
@@ -71,11 +69,9 @@ class ModelEvaluation:
             model_name = os.path.basename(model_path).split('.')[0]
             model = joblib.load(model_path)
             logger.info(f"Evaluating model: {model_name}")
-
             metrics = self.evaluate_model(model)
             metrics['Model'] = model_name
             metrics_list.append(metrics)
-
             self.log_to_mlflow(model_name, metrics)
 
             if metrics["F1 Score"] > best_f1_score:
