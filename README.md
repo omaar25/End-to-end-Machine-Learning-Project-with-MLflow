@@ -1,7 +1,7 @@
 # Predictive Maintenance Web Application
 
 ## Overview
-This project develops a web application for predictive maintenance using synthetic data, employing machine learning models to forecast equipment failure and diagnose potential causes. By tracking critical operational metrics, the application provides real-time analytics to enhance proactive maintenance strategies and reduce unexpected equipment downtime.
+This project develops a web application for predictive maintenance using synthetic data, employing machine learning models to predict equipment failure and diagnose potential causes. The application provides real-time analytics to enhance proactive maintenance strategies and reduce unexpected equipment downtime.
 
 ## Features
 - **Failure Prediction:** Predicts the likelihood of equipment failure based on factors such as temperature, rotational speed, torque, and tool wear.
