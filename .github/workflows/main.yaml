@@ -67,6 +67,7 @@ jobs:
           ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}  # Azure Container Registry name from GitHub Secrets
           IMAGE_TAG: latest  # Tag for the Docker image
         run: |
+          echo "ACR Registry: $ACR_REGISTRY"  # Debugging step
           # Log in to Azure Container Registry
           echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY.azurecr.io -u ${{ secrets.CLIENTID }} --password-stdin  # Login to ACR
           # Build and push the Docker image to ACR
