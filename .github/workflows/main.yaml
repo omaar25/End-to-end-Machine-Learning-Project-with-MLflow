@@ -53,7 +53,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure credentials from GitHub Secrets
+          client-id: ${{ secrets.CLIENTID }}        # Azure client ID from GitHub Secrets
+          client-secret: ${{ secrets.CLIENTSECRET }} # Azure client secret from GitHub Secrets
+          tenant-id: ${{ secrets.TENANTID }}        # Azure tenant ID from GitHub Secrets
 
       # Step to build the Docker image, tag it, and push it to Azure Container Registry
       - name: Build, tag, and push image to Azure Container Registry
@@ -62,7 +64,7 @@ jobs:
           IMAGE_TAG: latest  # Tag for the Docker image
         run: |
           # Log in to Azure Container Registry
-          echo ${{ secrets.AZURE_CLIENT_SECRET }} | docker login $ACR_REGISTRY.azurecr.io -u ${{ secrets.AZURE_CLIENT_ID }} --password-stdin  # Login to ACR
+          echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY.azurecr.io -u ${{ secrets.CLIENTID }} --password-stdin  # Login to ACR
           # Build and push the Docker image to ACR
           docker build -t $ACR_REGISTRY.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .  # Build the image
           docker push $ACR_REGISTRY.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG  # Push the image to ACR
@@ -80,19 +82,21 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure credentials from GitHub Secrets
+          client-id: ${{ secrets.CLIENTID }}        # Azure client ID from GitHub Secrets
+          client-secret: ${{ secrets.CLIENTSECRET }} # Azure client secret from GitHub Secrets
+          tenant-id: ${{ secrets.TENANTID }}        # Azure tenant ID from GitHub Secrets
 
       # Step to pull the latest Docker image from Azure Container Registry
       - name: Pull latest images
         run: |
-         docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest  # Pull the latest image
+          docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest  # Pull the latest image
 
       # Step to run the Docker image to serve users (optional)
       - name: Run Docker Image to serve users
         run: |
-         docker run -d -p 8080:8080 --name=cnncls -e 'AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}' -e 'AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}' -e 'AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}'  ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker run -d -p 8080:8080 --name=cnncls -e 'AZURE_CLIENT_ID=${{ secrets.CLIENTID }}' -e 'AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }}' -e 'AZURE_TENANT_ID=${{ secrets.TENANTID }}' ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
        
       # Step to clean up unused images and containers (optional)
       - name: Clean previous images and containers
         run: |
-         docker system prune -f  # Remove unused data
+          docker system prune -f  # Remove unused data
