@@ -53,9 +53,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.CLIENTID }}        # Azure client ID from GitHub Secrets
-          client-secret: ${{ secrets.CLIENTSECRET }} # Azure client secret from GitHub Secrets
-          tenant-id: ${{ secrets.TENANTID }}        # Azure tenant ID from GitHub Secrets
+          creds: |
+            {
+              "clientId": "${{ secrets.CLIENTID }}",
+              "clientSecret": "${{ secrets.CLIENTSECRET }}",
+              "subscriptionId": "${{ secrets.SUBSCRIPTIONID }}",
+              "tenantId": "${{ secrets.TENANTID }}"
+            }
 
       # Step to build the Docker image, tag it, and push it to Azure Container Registry
       - name: Build, tag, and push image to Azure Container Registry
@@ -82,9 +86,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.CLIENTID }}        # Azure client ID from GitHub Secrets
-          client-secret: ${{ secrets.CLIENTSECRET }} # Azure client secret from GitHub Secrets
-          tenant-id: ${{ secrets.TENANTID }}        # Azure tenant ID from GitHub Secrets
+          creds: |
+            {
+              "clientId": "${{ secrets.CLIENTID }}",
+              "clientSecret": "${{ secrets.CLIENTSECRET }}",
+              "subscriptionId": "${{ secrets.SUBSCRIPTIONID }}",
+              "tenantId": "${{ secrets.TENANTID }}"
+            }
 
       # Step to pull the latest Docker image from Azure Container Registry
       - name: Pull latest images
