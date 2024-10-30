@@ -37,34 +37,23 @@ class AppPipelinePrediction:
         Rotational_Speed_RPM = float(form_data['Rotational_Speed_RPM'])
         Torque_Nm = float(form_data['Torque_Nm'])
         Tool_Wear_min = float(form_data['Tool_Wear_min'])
-
-        # Create DataFrame
         data = np.array([Type, Air_temperature_K, Process_temperature_K, 
                          Rotational_Speed_RPM, Torque_Nm, Tool_Wear_min]).reshape(1, -1)
         columns = ['Type', 'Air temperature [K]', 'Process temperature [K]', 'Rotational speed [rpm]',
                    'Torque [Nm]', 'Tool wear [min]']
         df = pd.DataFrame(data, columns=columns)
-
         df['Air temperature [K]'] = df['Air temperature [K]'].astype(float)
         df['Process temperature [K]'] = df['Air temperature [K]'].astype(float)
         df['Rotational speed [rpm]'] = df['Rotational speed [rpm]'].astype(float)
         df['Torque [Nm]'] = df['Torque [Nm]'].astype(float)
         df['Tool wear [min]'] = df['Tool wear [min]'].astype(float)
-
-        # Attach DataFrame to DataProcessing instance and process
         data_processor = DataProcessing(self.config.get_data_processing_config())
         data_processor.df = df
         data_processor.rename_columns()
         data_processor.convert_temperature()
-
-        # Scale required columns
         col_to_scale = ['Rotational_Speed_RPM', 'Torque_Nm', 'Tool_Wear_min', 'Air_temperature_C', 'Process_temperature_C']
         data_processor.df[col_to_scale] = self.scaler.transform(data_processor.df[col_to_scale])
-
-        # Encode categorical features if needed
         data_processor.encode_features()
-
-        # Return the processed DataFrame
         return data_processor.df
 
     def predict(self, form_data):
