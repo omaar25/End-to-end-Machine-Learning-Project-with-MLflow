@@ -72,13 +72,13 @@
 				<div class="form-row-total">
 
 					<div class="form-row">
-                        <label for="Air_temperature_C"> Air temperature [C]:</label>
-						<input type="text" name="Air_temperature_C" id="Air_temperature_C" class="input-text" placeholder="Air_temperature_C" required>
+                        <label for="Air_temperature_K"> Air temperature [K]:</label>
+						<input type="text" name="Air_temperature_K" id="Air_temperature_K" class="input-text" placeholder="Air_temperature_K" required>
 					</div>
 
 					<div class="form-row">
-                        <label for="Process_temperature_C"> Process temperature [C]:</label>
-						<input type="text" name="Process_temperature_C" id="Process_temperature_C" class="input-text" placeholder="Process_temperature_C" required>
+                        <label for="Process_temperature_K"> Process temperature [C]:</label>
+						<input type="text" name="Process_temperature_K" id="Process_temperature_K" class="input-text" placeholder="Process_temperature_K" required>
 					</div>
 
 				</div>
@@ -120,6 +120,11 @@
 					<input type="submit" name="register" class="register" value="Predict">
 				</div>
 			</form>
+            {% if prediction %}
+        <div class="result">
+            <h3>Prediction Result: {{ prediction }}</h3>
+        </div>
+        {% endif %}
 		</div>
 	</div>
 </body><!-- This templates was made by Colorlib (https://colorlib.com) -->

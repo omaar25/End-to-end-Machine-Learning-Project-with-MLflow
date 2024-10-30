@@ -1,28 +1,32 @@
 import os
-
-from sklearn.calibration import LabelEncoder
-from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler, OrdinalEncoder
 from src.ML.entity.config_entity import DataProcessingConfig
 from src.ML import logger
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
+import pickle
 
 
 class DataProcessing:
     def __init__(self, config: DataProcessingConfig):
         self.config = config
-        self.df = None  
-    
+        self.df = None
+        
+
     def load_data(self):
         """Load data from CSV file."""
         self.df = pd.read_csv(self.config.data_path)
         logger.info("Data loaded successfully")
-
-    def rename_and_drop_columns(self):
-        """Rename and drop specified columns."""
+    
+    def drop_columns(self):
+        """drop specified columns."""
         self.df.drop(['UDI', 'Product ID', 'Target'], axis=1, inplace=True)
+        logger.info("dropped columns")
+
+    def rename_columns(self):
+        """Rename specified columns."""
         rename_dict = {
             'Air temperature [K]': 'Air_temperature_C',
             'Process temperature [K]': 'Process_temperature_C',
@@ -31,22 +35,47 @@ class DataProcessing:
             'Tool wear [min]': 'Tool_Wear_min',
         }
         self.df.rename(columns=rename_dict, inplace=True)
-        logger.info("Renamed and dropped columns")
+        logger.info("Renamed columns")
 
     def convert_temperature(self):
-        """Convert temperature from Kelvin to Celsius and drop original columns."""
+        """Convert temperature from Kelvin to Celsius."""
         self.df['Air_temperature_C'] = self.df['Air_temperature_C'] - 273.15
         self.df['Process_temperature_C'] = self.df['Process_temperature_C'] - 273.15
-        logger.info("Converted temperatures to Celsius and dropped original columns")
+        logger.info("Converted temperatures to Celsius")
 
+    def get_type_mapping(self):
+        """Return the mapping of failure types to numerical values."""
+        return {
+            'L': 0,
+            'M': 1,
+            'H': 2,
+        }
+
+    def get_failure_type_mapping(self):
+        """Return the mapping of failure types to numerical values."""
+        return {
+            'No Failure': 0,
+            'Heat Dissipation Failure': 1,
+            'Power Failure': 2,
+            'Overstrain Failure': 3,
+            'Tool Wear Failure': 4,
+            'Random Failures': 5
+        }
+    
     def encode_features(self):
         """Encode categorical features with OrdinalEncoder and LabelEncoder."""
-        ordinal_encoder = OrdinalEncoder(categories=[['L', 'M', 'H']])
-        self.df['Type'] = ordinal_encoder.fit_transform(self.df[['Type']])
-        self.df['Type'] = pd.to_numeric(self.df['Type'], errors='coerce')
-        label_encoder = LabelEncoder()
-        self.df['Failure Type'] = label_encoder.fit_transform(self.df['Failure Type'])
-        self.df['Failure Type'] = pd.to_numeric(self.df['Failure Type'], errors='coerce')
+
+        #The if jsut to make sure in the app to encode Type as we will not have Failure Type because it is the targer
+        if 'Type' in self.df.columns:
+            self.df['Type'] = self.df['Type'].map(self.get_type_mapping())
+        if 'Failure Type' in self.df.columns:
+            self.df['Failure Type'] = self.df['Failure Type'].map(self.get_failure_type_mapping())
+
+    
+    def decode_failure_type(self, encoded_value):
+        """Decode an encoded failure type value using the failure type mapping."""
+        inverse_mapping = {v: k for k, v in self.get_failure_type_mapping().items()}
+        return inverse_mapping.get(encoded_value, "Unknown")
 
 
     def scale_features(self):
@@ -54,8 +83,10 @@ class DataProcessing:
         col_to_scale = ['Rotational_Speed_RPM', 'Torque_Nm', 'Tool_Wear_min', 'Air_temperature_C', 'Process_temperature_C']
         scaler = MinMaxScaler()
         self.df[col_to_scale] = scaler.fit_transform(self.df[col_to_scale])
+        scaler_path = os.path.join(self.config.root_dir, "scaler.pkl")
+        with open(scaler_path, 'wb') as f:
+            pickle.dump(scaler, f)
         logger.info("Scaled numerical features")
-      
 
     def balance_data(self):
         """Balance the dataset by undersampling 'No Failure' and oversampling other classes."""
@@ -67,7 +98,7 @@ class DataProcessing:
         rus = RandomUnderSampler(sampling_strategy={'No Failure': 2500})
         X_under, y_under = rus.fit_resample(X, y)
 
-        # Now, oversample the other classes to 1000
+        # Now, oversample the other classes to specified counts
         ros = RandomOverSampler(sampling_strategy={
             'Heat Dissipation Failure': 210,
             'Power Failure': 190,
@@ -80,11 +111,10 @@ class DataProcessing:
 
         # Combine balanced features and target variable back into a DataFrame
         self.df = pd.concat([X_balanced, y_balanced], axis=1)
-
         logger.info("Balanced the dataset")
 
-
     def train_test_split(self):
+        """Split the data into training and test sets and save to CSV."""
         y = self.df['Failure Type']
         train, test = train_test_split(self.df, test_size=0.2, random_state=42, stratify=y)
         train.to_csv(os.path.join(self.config.root_dir, "train.csv"), index=False)
