@@ -1,0 +1,98 @@
+# Name of the workflow
+name: workflow
+
+# Trigger this workflow on pushes to the main branch, ignoring changes to the README.md file
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+# Define permissions for the workflow
+permissions:
+  id-token: write  # Permission to write ID tokens, needed for certain authentication scenarios
+  contents: read   # Permission to read the contents of the repository
+
+# Define the jobs that make up the workflow
+jobs:
+  # Job for Continuous Integration (CI)
+  integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest  # The job runs on the latest Ubuntu environment
+    steps:
+      # Step to check out the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step for linting the code (placeholder for actual linting command)
+      - name: Lint code
+        run: echo "Linting repository"
+
+      # Step to run unit tests (placeholder for actual test command)
+      - name: Run unit tests
+        run: echo "Running unit tests"
+
+  # Job for Continuous Delivery (CD)
+  build-and-push-acr-image:
+    name: Continuous Delivery
+    needs: integration  # This job runs after the integration job completes successfully
+    runs-on: ubuntu-latest  # The job runs on the latest Ubuntu environment
+    steps:
+      # Step to check out the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step to install necessary utilities (e.g., jq, unzip)
+      - name: Install Utilities
+        run: |
+          sudo apt-get update  # Update package lists
+          sudo apt-get install -y jq unzip  # Install jq and unzip utilities
+
+      # Step to log in to Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure credentials from GitHub Secrets
+
+      # Step to build the Docker image, tag it, and push it to Azure Container Registry
+      - name: Build, tag, and push image to Azure Container Registry
+        env:
+          ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}  # Azure Container Registry name from GitHub Secrets
+          IMAGE_TAG: latest  # Tag for the Docker image
+        run: |
+          # Log in to Azure Container Registry
+          echo ${{ secrets.AZURE_CLIENT_SECRET }} | docker login $ACR_REGISTRY.azurecr.io -u ${{ secrets.AZURE_CLIENT_ID }} --password-stdin  # Login to ACR
+          # Build and push the Docker image to ACR
+          docker build -t $ACR_REGISTRY.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .  # Build the image
+          docker push $ACR_REGISTRY.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG  # Push the image to ACR
+
+  # Job for Continuous Deployment
+  Continuous-Deployment:
+    needs: build-and-push-acr-image  # This job runs after the build-and-push-acr-image job completes successfully
+    runs-on: self-hosted  # The job runs on a self-hosted runner (e.g., your own server)
+    steps:
+      # Step to check out the code from the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Step to log in to Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure credentials from GitHub Secrets
+
+      # Step to pull the latest Docker image from Azure Container Registry
+      - name: Pull latest images
+        run: |
+         docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest  # Pull the latest image
+
+      # Step to run the Docker image to serve users (optional)
+      - name: Run Docker Image to serve users
+        run: |
+         docker run -d -p 8080:8080 --name=cnncls -e 'AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}' -e 'AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}' -e 'AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}'  ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+       
+      # Step to clean up unused images and containers (optional)
+      - name: Clean previous images and containers
+        run: |
+         docker system prune -f  # Remove unused data
