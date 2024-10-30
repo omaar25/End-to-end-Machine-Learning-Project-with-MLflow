@@ -12,6 +12,7 @@ permissions:
   contents: read
 
 jobs:
+  # Continuous Integration Job
   integration:
     name: Continuous Integration
     runs-on: ubuntu-latest
@@ -25,6 +26,7 @@ jobs:
       - name: Run unit tests
         run: echo "Running unit tests"
 
+  # Continuous Delivery Job
   build-and-push-acr-image:
     name: Continuous Delivery
     needs: integration
@@ -54,16 +56,17 @@ jobs:
           ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
           IMAGE_TAG: latest
         run: |
-          echo "ACR Registry: $ACR_REGISTRY"
+          echo "Logging in to ACR: $ACR_REGISTRY"
           echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY -u ${{ secrets.CLIENTID }} --password-stdin
           docker build -t $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .
           docker push $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
 
+  # Continuous Deployment Job
   Continuous-Deployment:
     needs: build-and-push-acr-image
     runs-on: self-hosted
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Login to Azure
@@ -77,14 +80,18 @@ jobs:
               "tenantId": "${{ secrets.TENANTID }}"
             }
 
-      - name: Pull latest images
+      - name: Pull latest image from ACR
         run: |
           docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Run Docker Image to serve users
+      - name: Run Docker Container
         run: |
-          docker run -d -p 8080:8080 --name=cnncls -e 'AZURE_CLIENT_ID=${{ secrets.CLIENTID }}' -e 'AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }}' -e 'AZURE_TENANT_ID=${{ secrets.TENANTID }}' ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker run -d -p 8080:8080 --name=cnncls \
+            -e AZURE_CLIENT_ID=${{ secrets.CLIENTID }} \
+            -e AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }} \
+            -e AZURE_TENANT_ID=${{ secrets.TENANTID }} \
+            ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Clean previous images and containers
+      - name: Clean up unused images and containers
         run: |
           docker system prune -f
