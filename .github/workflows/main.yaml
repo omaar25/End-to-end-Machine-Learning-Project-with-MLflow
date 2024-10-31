@@ -51,17 +51,13 @@ jobs:
               "tenantId": "${{ secrets.TENANTID }}"
             }
 
-      - name: Login to ACR
-        run: |
-          ACR_REGISTRY="${{ secrets.AZURE_ACR_NAME }}.azurecr.io"
-          echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY -u ${{ secrets.CLIENTID }} --password-stdin
-          sleep 5  # Wait for ACR authentication to propagate
-
-      - name: Build, tag, and push image to ACR
+      - name: Build, tag, and push image to Azure Container Registry
         env:
           ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
           IMAGE_TAG: latest
         run: |
+          echo "Logging in to ACR: $ACR_REGISTRY"
+          echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY -u ${{ secrets.CLIENTID }} --password-stdin
           docker build -t $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .
           docker push $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
 
@@ -73,6 +69,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Install Azure CLI if not already available
       - name: Install Azure CLI
         run: |
           if ! command -v az &> /dev/null; then
@@ -82,8 +79,11 @@ jobs:
             echo "Azure CLI is already installed"
           fi
 
+      # Verify Azure CLI installation and PATH
       - name: Verify Azure CLI Installation
-        run: az version
+        run: |
+          az version
+        shell: bash
 
       - name: Login to Azure
         uses: azure/login@v1
@@ -97,22 +97,17 @@ jobs:
             }
 
       - name: Pull latest image from ACR
-        env:
-          ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-          IMAGE_TAG: latest
         run: |
-          docker pull $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
+          docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Run Docker Container
-        env:
-          ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-          IMAGE_TAG: latest
         run: |
           docker run -d -p 8080:8080 --name=cnncls \
             -e AZURE_CLIENT_ID=${{ secrets.CLIENTID }} \
             -e AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }} \
             -e AZURE_TENANT_ID=${{ secrets.TENANTID }} \
-            $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
+            ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Clean up unused images and containers
-        run: docker system prune -f
+        run: |
+          docker system prune -f
