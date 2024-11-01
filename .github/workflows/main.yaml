@@ -32,6 +32,9 @@ jobs:
     name: Continuous Delivery
     needs: integration
     runs-on: ubuntu-latest
+    env:
+      ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
+      IMAGE_TAG: latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -53,19 +56,19 @@ jobs:
             }
 
       - name: Build, tag, and push image to Azure Container Registry
-        env:
-          ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-          IMAGE_TAG: latest
         run: |
           echo "Logging in to ACR: $ACR_REGISTRY"
-          echo ${{ secrets.CLIENTSECRET }} | docker login $ACR_REGISTRY -u ${{ secrets.CLIENTID }} --password-stdin
+          echo "${{ secrets.CLIENTSECRET }}" | docker login $ACR_REGISTRY -u "${{ secrets.CLIENTID }}" --password-stdin
           docker build -t $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .
           docker push $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
 
   # Continuous Deployment Job
   Continuous-Deployment:
+    name: Continuous Deployment
     needs: build-and-push-acr-image
     runs-on: self-hosted
+    env:
+      ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -99,7 +102,9 @@ jobs:
 
       - name: Pull latest image from ACR
         run: |
-          docker pull ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          echo "Logging in to ACR: $ACR_REGISTRY"
+          echo "${{ secrets.CLIENTSECRET }}" | docker login $ACR_REGISTRY -u "${{ secrets.CLIENTID }}" --password-stdin
+          docker pull $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Run Docker Container
         run: |
@@ -107,7 +112,7 @@ jobs:
             -e AZURE_CLIENT_ID=${{ secrets.CLIENTID }} \
             -e AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }} \
             -e AZURE_TENANT_ID=${{ secrets.TENANTID }} \
-            ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+            $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Clean up unused images and containers
         run: |
