@@ -9,12 +9,17 @@ from ML.entity.config_entity import ModelEvaluationConfig
 from ML.utils.common import save_json
 from src.ML import logger
 import dagshub
+from dotenv import load_dotenv  
+
 
 
 class ModelEvaluation:
     def __init__(self, config: ModelEvaluationConfig):
         self.config = config
-        dagshub.init(repo_owner='omaar25', repo_name='End-to-end-Machine-Learning-Project-with-MLflow', mlflow=True)
+        dagshub.init(repo_owner='omaar25',
+                     repo_name='Predictive-Maintenance-Web-Application',
+                     mlflow=True
+                     )
 
     def load_test_data(self):
         """Load the test data and split into features and target."""
@@ -27,9 +32,9 @@ class ModelEvaluation:
         """Evaluate a single model and return its metrics as a dictionary."""
         y_pred = model.predict(self.X_test)
         accuracy = accuracy_score(self.y_test, y_pred)
-        precision = precision_score(self.y_test, y_pred, average='weighted')
-        recall = recall_score(self.y_test, y_pred, average='weighted')
-        f1 = f1_score(self.y_test, y_pred, average='weighted')
+        precision = precision_score(self.y_test, y_pred, average='macro')
+        recall = recall_score(self.y_test, y_pred, average='macro')
+        f1 = f1_score(self.y_test, y_pred, average='macro')
 
         return {
             "Accuracy": accuracy,
