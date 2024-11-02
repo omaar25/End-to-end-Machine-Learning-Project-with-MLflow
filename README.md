@@ -1,23 +1,64 @@
-# Predictive Maintenance Web Application
+# Machine Learning Prediction Web Application
 
-## Overview
-This project develops a web application for predictive maintenance using synthetic data, employing machine learning models to predict equipment failure and diagnose potential causes. The application provides real-time analytics to enhance proactive maintenance strategies and reduce unexpected equipment downtime.
+## 🚀 Project Overview
 
-## Features
-- **Failure Prediction:** Predicts the likelihood of equipment failure based on factors such as temperature, rotational speed, torque, and tool wear.
-- **Failure Type Classification:** Classifies potential failure types when failure risk is detected, assisting in targeted maintenance response.
+This project is a dynamic **Flask web application** designed to provide real-time machine learning predictions using a custom pipeline. It serves as a practical demonstration of deploying machine learning models in a production environment while highlighting essential skills in software development, cloud deployment, and data science.
 
-## Project Motivation
-Predictive maintenance offers transformative benefits in reducing operational costs, enhancing uptime, and improving equipment reliability. This application aims to empower end-users with actionable insights, enabling a shift from reactive to proactive maintenance. 
+## 🌟 Key Features
 
-## Success Criteria
-To gauge project success, we will assess the following:
-1. **Model Performance:** Evaluated based on precision, recall, and F1 score, ensuring accurate and relevant failure predictions.
-2. **User Experience:** The web application is designed for ease of use, with a focus on responsiveness and intuitive navigation.
-3. **Operational Impact:** Demonstrated reduction in unplanned downtime and maintenance expenses through timely maintenance interventions.
+- **User-Centric Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
+- **Custom Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data preprocessing, feature engineering, and model inference to deliver accurate predictions.
+- **Containerization with Docker**: The entire application is containerized, ensuring consistency across development and production environments and simplifying deployment.
+- **Seamless Azure Integration**: Continuous Integration/Continuous Deployment (CI/CD) setup with GitHub Actions to automate testing and deployment to Azure Container Registry (ACR).
 
-## System Architecture
-The application consists of three main layers:
-1. **Data Ingestion and Processing**: Synthetic dataset pre-processing and feature engineering are automated to streamline model input.
-2. **Machine Learning Models**: A suite of machine learning models, including Logistic Regression, SVM, Decision Trees, and Random Forests, were developed with configuration managed via YAML files for easy parameter adjustments.
-3. **Web Application Interface**: The user interface allows real-time input of process parameters, displaying risk assessments and maintenance recommendations in an interactive format.
+## 🛠 Technologies Used
+
+- **Programming Language**: Python 3.8
+- **Web Framework**: Flask
+- **Containerization**: Docker
+- **Cloud Services**: Azure, Azure Container Registry
+- **CI/CD**: GitHub Actions
+- **Machine Learning**: Custom pipeline built with relevant ML libraries (e.g., scikit-learn, pandas)
+
+## 💡 Getting Started
+
+### Prerequisites
+
+Before running the application, ensure you have the following:
+
+- Docker installed on your machine.
+- An Azure account with access to Azure Container Registry.
+- Python 3.8 or higher for local development.
+
+### Installation Steps
+
+1. **Clone the repository**:
+```
+git clone https://github.com/omaar25/Predictive-Maintenance-Web-Application.git
+cd Predictive-Maintenance-Web-Application
+```
+
+2. **Build the Docker image**:
+
+```
+docker build -t ml-predictor-app .
+```
+
+3. **Run the Docker container**:
+
+```
+docker run -d -p 8080:8080 ml-predictor-app
+```
+4. **Access the application**:
+Open your browser and navigate to 
+```
+http://localhost:8080
+```
+
+## How It Works
+1. Data Input: Users can input data via the web interface.
+2. Prediction Display: When data is submitted, the application processes the input through the custom pipeline to display prediction instantly.
+
+## Continuous Integration and Deployment
+Automated workflows using GitHub Actions ensure that every push to the main branch triggers a build and deployment pipeline, enhancing code quality and deployment efficiency.
+The application is pulled from Azure Container Registry and runs seamlessly in any environment.
