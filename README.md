@@ -5,15 +5,14 @@
 This project is a dynamic **Flask web application** designed to provide real-time machine learning predictions using a custom pipeline. It serves as a practical demonstration of deploying machine learning models in a production environment while highlighting essential skills in software development, cloud deployment, and data science.
 
 ##  Key Features
-
-- **User-Centric Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
-- **Custom Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data preprocessing, feature engineering, and model inference to deliver accurate predictions.
+- **Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data ingestion, data preprocessing, feature engineering, and model inference to deliver accurate predictions.
+- **User-Friendly Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
 - **Containerization with Docker**: The entire application is containerized, ensuring consistency across development and production environments and simplifying deployment.
-- **Seamless Azure Integration**: Continuous Integration/Continuous Deployment (CI/CD) setup with GitHub Actions to automate testing and deployment to Azure Container Registry (ACR).
+- **Azure Integration**: Continuous Integration/Continuous Deployment setup with GitHub Actions to automate testing and deployment to Azure Container Registry.
 
 ## 🛠 Technologies Used
 
-- **Programming Language**: Python 3.8
+- **Programming Language**: Python, CSS, JavaScript, HTML
 - **Web Framework**: Flask
 - **Containerization**: Docker
 - **Cloud Services**: Azure, Azure Container Registry
