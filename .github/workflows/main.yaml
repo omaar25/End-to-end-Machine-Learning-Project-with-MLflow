@@ -70,7 +70,7 @@ jobs:
 
       - name: Pull latest image from ACR
         run: |
-          az acr pull --name ${{ secrets.ACR_NAME }} --image ${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker pull ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Run Docker Image to serve users
         run: |
