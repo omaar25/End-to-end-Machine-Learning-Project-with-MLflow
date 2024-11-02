@@ -2,7 +2,16 @@
 
 ##  Project Overview
 
-This project is a dynamic Flask web application designed to provide real-time machine learning predictions using a custom pipeline.
+This project is a dynamic Flask web application designed to provide machine learning predictions for predictive maintenance.
+
+# Project Motivation
+Predictive maintenance offers transformative benefits in reducing operational costs, enhancing uptime, and improving equipment reliability. This application aims to empower end-users with actionable insights, enabling a shift from reactive to proactive maintenance. 
+
+## Success Criteria
+To gauge project success, we will assess the following:
+1. **Model Performance:** Evaluated based on precision, recall, and F1 score, ensuring accurate and relevant failure predictions.
+2. **User Experience:** The web application is designed for ease of use, with a focus on responsiveness and intuitive navigation.
+3. **Operational Impact:** Demonstrated reduction in unplanned downtime and maintenance expenses through timely maintenance interventions.
 
 ##  Key Features
 - **Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data ingestion, data preprocessing, feature engineering, and model inference to deliver accurate predictions.
