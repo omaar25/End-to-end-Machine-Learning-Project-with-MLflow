@@ -1,10 +1,10 @@
 # Machine Learning Prediction Web Application
 
-## 🚀 Project Overview
+##  Project Overview
 
 This project is a dynamic **Flask web application** designed to provide real-time machine learning predictions using a custom pipeline. It serves as a practical demonstration of deploying machine learning models in a production environment while highlighting essential skills in software development, cloud deployment, and data science.
 
-## 🌟 Key Features
+##  Key Features
 
 - **User-Centric Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
 - **Custom Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data preprocessing, feature engineering, and model inference to deliver accurate predictions.
@@ -20,7 +20,7 @@ This project is a dynamic **Flask web application** designed to provide real-tim
 - **CI/CD**: GitHub Actions
 - **Machine Learning**: Custom pipeline built with relevant ML libraries (e.g., scikit-learn, pandas)
 
-## 💡 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
