@@ -50,11 +50,11 @@ jobs:
       - name: Build, tag, and push image to ACR
         env:
           ACR_REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+          IMAGE_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
           IMAGE_TAG: latest
         run: |
-          docker build -t $ACR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ACR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
   Continuous-Deployment:
     needs: build-and-push-acr-image
