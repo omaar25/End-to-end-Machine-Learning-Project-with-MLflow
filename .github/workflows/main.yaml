@@ -1,4 +1,4 @@
-name: ci-cd
+name: workflow
 
 on:
   push:
@@ -37,14 +37,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y azure-cli
-          
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
-          
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Login to ACR
         run: |
           az acr login --name ${{ secrets.ACR_NAME }}
@@ -68,9 +66,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Pull latest image from ACR
         run: |
