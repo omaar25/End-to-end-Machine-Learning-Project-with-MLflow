@@ -4,7 +4,7 @@
 
 This project is a dynamic Flask web application designed to provide machine learning predictions for predictive maintenance.
 
-# Project Motivation
+## Project Motivation
 Predictive maintenance offers transformative benefits in reducing operational costs, enhancing uptime, and improving equipment reliability. This application aims to empower end-users with actionable insights, enabling a shift from reactive to proactive maintenance. 
 
 ## Success Criteria
