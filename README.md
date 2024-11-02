@@ -2,18 +2,26 @@
 
 ##  Project Overview
 
-This project is a dynamic **Flask web application** designed to provide real-time machine learning predictions using a custom pipeline. It serves as a practical demonstration of deploying machine learning models in a production environment while highlighting essential skills in software development, cloud deployment, and data science.
+This project is a dynamic Flask web application designed to provide machine learning predictions for predictive maintenance.
 
-##  Key Features
+## Project Motivation
+Predictive maintenance offers transformative benefits in reducing operational costs, enhancing uptime, and improving equipment reliability. This application aims to empower end-users with actionable insights, enabling a shift from reactive to proactive maintenance. 
 
-- **User-Centric Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
-- **Custom Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data preprocessing, feature engineering, and model inference to deliver accurate predictions.
+## Success Criteria
+To gauge project success, we will assess the following:
+1. **Model Performance:** Evaluated based on precision, recall, and F1 score, ensuring accurate and relevant failure predictions.
+2. **User Experience:** The web application is designed for ease of use, with a focus on responsiveness and intuitive navigation.
+3. **Operational Impact:** Demonstrated reduction in unplanned downtime and maintenance expenses through timely maintenance interventions.
+
+## Key Features
+- **Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data ingestion, data preprocessing, feature engineering, and model inference to deliver accurate predictions.
+- **User-Friendly Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
 - **Containerization with Docker**: The entire application is containerized, ensuring consistency across development and production environments and simplifying deployment.
-- **Seamless Azure Integration**: Continuous Integration/Continuous Deployment (CI/CD) setup with GitHub Actions to automate testing and deployment to Azure Container Registry (ACR).
+- **Azure Integration**: Continuous Integration/Continuous Deployment setup with GitHub Actions to automate testing and deployment to Azure Container Registry.
 
-## 🛠 Technologies Used
+## Technologies Used
 
-- **Programming Language**: Python 3.8
+- **Programming Language**: Python, CSS, JavaScript, HTML
 - **Web Framework**: Flask
 - **Containerization**: Docker
 - **Cloud Services**: Azure, Azure Container Registry
@@ -28,7 +36,7 @@ Before running the application, ensure you have the following:
 
 - Docker installed on your machine.
 - An Azure account with access to Azure Container Registry.
-- Python 3.8 or higher for local development.
+- Python 3.x for local development.
 
 ### Installation Steps
 
