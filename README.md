@@ -36,7 +36,7 @@ Before running the application, ensure you have the following:
 
 - Docker installed on your machine.
 - An Azure account with access to Azure Container Registry.
-- Python 3.8 or higher for local development.
+- Python 3.x for local development.
 
 ### Installation Steps
 
