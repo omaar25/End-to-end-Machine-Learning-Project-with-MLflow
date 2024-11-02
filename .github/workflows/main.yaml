@@ -12,12 +12,10 @@ permissions:
   contents: read
 
 jobs:
-  # Continuous Integration Job
   integration:
     name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
-      
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -27,93 +25,61 @@ jobs:
       - name: Run unit tests
         run: echo "Running unit tests"
 
-  # Continuous Delivery Job
   build-and-push-acr-image:
     name: Continuous Delivery
     needs: integration
     runs-on: ubuntu-latest
-    env:
-      ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-      IMAGE_TAG: latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Utilities
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq unzip
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: |
-            {
-              "clientId": "${{ secrets.CLIENTID }}",
-              "clientSecret": "${{ secrets.CLIENTSECRET }}",
-              "subscriptionId": "${{ secrets.SUBSCRIPTIONID }}",
-              "tenantId": "${{ secrets.TENANTID }}"
-            }
-
-      - name: Build, tag, and push image to Azure Container Registry
-        run: |
-          echo "Logging in to ACR: $ACR_REGISTRY"
-          echo "${{ secrets.CLIENTSECRET }}" | docker login $ACR_REGISTRY -u "${{ secrets.CLIENTID }}" --password-stdin
-          docker build -t $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG .
-          docker push $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:$IMAGE_TAG
-
-  # Continuous Deployment Job
-  Continuous-Deployment:
-    name: Continuous Deployment
-    needs: build-and-push-acr-image
-    runs-on: self-hosted
-    env:
-      ACR_REGISTRY: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Install Azure CLI if not already available
       - name: Install Azure CLI
         run: |
-          if ! command -v az &> /dev/null; then
-            echo "Azure CLI not found, installing..."
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          else
-            echo "Azure CLI is already installed"
-          fi
-
-      # Verify Azure CLI installation and PATH
-      - name: Verify Azure CLI Installation
+          sudo apt-get update
+          sudo apt-get install -y azure-cli
+          
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          
+      - name: Login to ACR
         run: |
-          az version
-        shell: bash
+          az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Build, tag, and push image to ACR
+        env:
+          ACR_REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ACR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ACR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  Continuous-Deployment:
+    needs: build-and-push-acr-image
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.CLIENTID }}",
-              "clientSecret": "${{ secrets.CLIENTSECRET }}",
-              "subscriptionId": "${{ secrets.SUBSCRIPTIONID }}",
-              "tenantId": "${{ secrets.TENANTID }}"
-            }
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          tenant-id: ${{ secrets.TENANT_ID }}
 
       - name: Pull latest image from ACR
         run: |
-          echo "Logging in to ACR: $ACR_REGISTRY"
-          echo "${{ secrets.CLIENTSECRET }}" | docker login $ACR_REGISTRY -u "${{ secrets.CLIENTID }}" --password-stdin
-          docker pull $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          az acr pull --name ${{ secrets.ACR_NAME }} --image ${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Run Docker Container
+      - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --name=cnncls \
-            -e AZURE_CLIENT_ID=${{ secrets.CLIENTID }} \
-            -e AZURE_CLIENT_SECRET=${{ secrets.CLIENTSECRET }} \
-            -e AZURE_TENANT_ID=${{ secrets.TENANTID }} \
-            $ACR_REGISTRY/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-
-      - name: Clean up unused images and containers
+          docker run -d -p 8080:8080 --name=${{ secrets.AZURE_APP_NAME }} ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          
+      - name: Clean previous images and containers
         run: |
           docker system prune -f
