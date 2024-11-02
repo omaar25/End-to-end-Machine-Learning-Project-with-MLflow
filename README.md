@@ -2,7 +2,7 @@
 
 ##  Project Overview
 
-This project is a dynamic Flask web application designed to provide real-time machine learning predictions using a custom pipeline. It serves as a practical demonstration of deploying machine learning models in a production environment while highlighting essential skills in software development, cloud deployment, and data science.
+This project is a dynamic Flask web application designed to provide real-time machine learning predictions using a custom pipeline.
 
 ##  Key Features
 - **Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data ingestion, data preprocessing, feature engineering, and model inference to deliver accurate predictions.
