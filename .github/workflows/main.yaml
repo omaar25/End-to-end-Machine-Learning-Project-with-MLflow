@@ -1,20 +1,67 @@
-Continuous-Deployment:
+name: workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Lint code
+        run: echo "Linting repository"
+
+      - name: Run unit tests
+        run: echo "Running unit tests"
+
+  build-and-push-acr-image:
+    name: Continuous Delivery
+    needs: integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Azure CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y azure-cli
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Build, tag, and push image to ACR
+        env:
+          ACR_REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
+          IMAGE_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+
+  Continuous-Deployment:
     needs: build-and-push-acr-image
     runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Install Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo systemctl enable docker
-
-      - name: Validate Docker Installation
-        run: |
-          docker --version
 
       - name: Login to Azure
         uses: azure/login@v1
@@ -28,7 +75,7 @@ Continuous-Deployment:
       - name: Run Docker Image to serve users
         run: |
           docker run -d -p 8080:8080 --name=${{ secrets.AZURE_APP_NAME }} ${{ secrets.ACR_NAME }}.azurecr.io/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-
+          
       - name: Clean previous images and containers
         run: |
           docker system prune -f
