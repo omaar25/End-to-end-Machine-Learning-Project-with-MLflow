@@ -13,13 +13,13 @@ To gauge project success, we will assess the following:
 2. **User Experience:** The web application is designed for ease of use, with a focus on responsiveness and intuitive navigation.
 3. **Operational Impact:** Demonstrated reduction in unplanned downtime and maintenance expenses through timely maintenance interventions.
 
-##  Key Features
+## Key Features
 - **Machine Learning Pipeline**: Implements a robust and scalable pipeline that includes data ingestion, data preprocessing, feature engineering, and model inference to deliver accurate predictions.
 - **User-Friendly Interface**: An intuitive web interface that allows users to input data and receive instant predictions, enhancing user experience and engagement.
 - **Containerization with Docker**: The entire application is containerized, ensuring consistency across development and production environments and simplifying deployment.
 - **Azure Integration**: Continuous Integration/Continuous Deployment setup with GitHub Actions to automate testing and deployment to Azure Container Registry.
 
-## 🛠 Technologies Used
+## Technologies Used
 
 - **Programming Language**: Python, CSS, JavaScript, HTML
 - **Web Framework**: Flask
