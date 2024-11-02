@@ -19,7 +19,7 @@ class ModelEvaluation:
         dagshub.init(repo_owner='omaar25',
                      repo_name='Predictive-Maintenance-Web-Application',
                      mlflow=True
-                     )
+                    )
 
     def load_test_data(self):
         """Load the test data and split into features and target."""
