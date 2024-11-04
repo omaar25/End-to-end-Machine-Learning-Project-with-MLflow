@@ -4,6 +4,12 @@
 
 This project is a dynamic Flask web application designed to provide machine learning predictions for predictive maintenance.
 
+<video width="640" height="360" controls>
+  <source src="https://github.com/omaar25/Predictive-Maintenance-Web-Application/raw/main/app.webm" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+
 ## Project Motivation
 Predictive maintenance offers transformative benefits in reducing operational costs, enhancing uptime, and improving equipment reliability. This application aims to empower end-users with actionable insights, enabling a shift from reactive to proactive maintenance. 
 
