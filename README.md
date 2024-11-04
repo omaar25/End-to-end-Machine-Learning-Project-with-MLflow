@@ -3,6 +3,8 @@
 ##  Project Overview
 
 This project is a dynamic Flask web application designed to provide machine learning predictions for predictive maintenance.
+
+
 ![Example GIF](https://github.com/omaar25/Predictive-Maintenance-Web-Application/raw/main/app.gif)
 
 
